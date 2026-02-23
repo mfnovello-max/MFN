@@ -1,0 +1,1117 @@
+/* =========================================================
+   CLX Colecionáveis — CSS (refatorado / sem duplicações)
+   - Mantém seu visual
+   - Ajusta SOMENTE padding lateral do mini-meta + botões
+   - Mantém correções de preço (ins sem sublinhado, del menor)
+========================================================= */
+
+/* =========================
+   BASE / RESET
+========================= */
+#clx-page-colecionaveis{
+  --clx-top-gap-extra: 60px;
+  box-sizing:border-box;
+  color:var(--clx-color-text-main);
+  background:var(--clx-color-bg-body);
+  font-family:var(--clx-font-base);
+  padding:1rem;
+  /* mais respiro abaixo do header (header inteligente pode reaparecer ao subir/ao aplicar filtro) */
+  padding-top:calc(var(--clx-sticky-top, 110px) + var(--clx-top-gap-extra, 60px));
+}
+
+#clx-page-colecionaveis *,
+#clx-page-colecionaveis *::before,
+#clx-page-colecionaveis *::after{
+  box-sizing:inherit;
+}
+
+/* =========================
+   LAYOUT
+========================= */
+#clx-page-colecionaveis .clx-open-drawer{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:.9rem;
+  border:1px solid var(--clx-color-border-strong);
+  background:color-mix(in srgb, var(--clx-color-brand) 14%, transparent);
+  color:var(--clx-color-brand-neon);
+  padding:.56rem .95rem;
+  border-radius:var(--clx-radius-md);
+}
+
+#clx-page-colecionaveis .clx-layout{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:1rem;
+  align-items:start;
+}
+
+#clx-page-colecionaveis .clx-sidebar{
+  position:fixed;
+  inset:var(--clx-sticky-top, 0px) 0 0 0;
+  width:100%;
+  max-width:none;
+  height:calc(100dvh - var(--clx-sticky-top, 0px));
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:1rem;
+  border-right:1px solid var(--clx-color-border-subtle);
+  background:linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--clx-color-bg-elevated) 98%, black),
+    color-mix(in srgb, var(--clx-color-bg-soft) 98%, black)
+  );
+  transform:translateX(-100%);
+  transition:transform var(--clx-transition-base);
+  z-index:30;
+}
+
+#clx-page-colecionaveis .clx-sidebar.is-open{ transform:translateX(0); }
+
+#clx-page-colecionaveis .clx-sidebar-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:.9rem;
+}
+
+#clx-page-colecionaveis .clx-sidebar-head h2{
+  margin:0;
+  display:inline-flex;
+  align-items:center;
+  gap:.6rem;
+  color:var(--clx-color-brand-neon);
+  font-family:var(--clx-font-title);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  font-size:1.08rem;
+  line-height:1.02;
+}
+
+#clx-page-colecionaveis .clx-sidebar-title-text{
+  display:inline-flex;
+  flex-direction:column;
+  gap:.08rem;
+}
+
+#clx-page-colecionaveis .clx-sidebar-title-text > span{ display:block; }
+
+#clx-page-colecionaveis .clx-meta-bullet{
+  width:1.95rem;
+  height:1.95rem;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#0d2419;
+  background:radial-gradient(circle at 30% 30%, #8dfb8f 0%, #64ee79 45%, var(--clx-color-brand-neon) 100%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--clx-color-brand-neon) 42%, transparent),
+    0 0 16px color-mix(in srgb, var(--clx-color-brand-neon) 32%, transparent);
+  flex-shrink:0;
+  margin-top:.02rem;
+}
+
+#clx-page-colecionaveis .clx-meta-bullet svg,
+#clx-page-colecionaveis .clx-meta-bullet img{
+  width:1rem;
+  height:1rem;
+  display:block;
+}
+
+/* Ajuste ícone filtro via SVG externo (sem círculo de fundo do wrapper) */
+#clx-page-colecionaveis .clx-meta-bullet.clx-meta-bullet--filter{
+  width:4.7rem;
+  height:4.7rem;
+  background:none;
+  box-shadow:none;
+  color:inherit;
+  border-radius:0;
+}
+#clx-page-colecionaveis .clx-meta-bullet.clx-meta-bullet--filter img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+#clx-page-colecionaveis .clx-close-drawer{
+  display:inline-flex;
+  border:0;
+  background:transparent;
+  color:var(--clx-color-brand-neon);
+  font-size:1.35rem;
+  line-height:1;
+  cursor:pointer;
+}
+
+#clx-page-colecionaveis .clx-overlay{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  background:rgb(0 0 0 / 65%);
+  display:none;
+}
+
+#clx-page-colecionaveis .clx-overlay.is-open{ display:block; }
+
+#clx-page-colecionaveis .clx-results{ min-width:0; }
+
+#clx-page-colecionaveis .clx-topline{
+  margin-bottom:.45rem;
+  display:flex;
+  justify-content:flex-start;
+}
+
+#clx-page-colecionaveis .clx-topline [data-clx-count]{
+  margin:0;
+  font-size:1rem;
+  font-weight:600;
+}
+
+#clx-page-colecionaveis .clx-toolbar{
+  margin-bottom:.65rem;
+  display:flex;
+  align-items:center;
+  gap:.45rem .55rem;
+  flex-wrap:wrap;
+}
+#clx-page-colecionaveis .clx-toolbar > *{ min-width:0; }
+
+#clx-page-colecionaveis .clx-active-filters{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.35rem;
+  overflow-x:hidden;
+  min-width:0;
+  flex:1 1 320px;
+}
+
+#clx-page-colecionaveis .clx-chip{
+  padding:.24rem .55rem;
+  border-radius:var(--clx-radius-pill);
+  border:1px solid var(--clx-color-border-strong);
+  background:color-mix(in srgb, var(--clx-color-brand) 12%, transparent);
+  color:var(--clx-color-text-main);
+  font-size:.64rem;
+  font-weight:700;
+  text-transform:uppercase;
+  white-space:nowrap;
+  cursor:pointer;
+  transition:box-shadow var(--clx-transition-base), border-color var(--clx-transition-base), transform var(--clx-transition-base), background var(--clx-transition-base);
+}
+
+/* Hover dos chips no mesmo "clima" do botão */
+#clx-page-colecionaveis .clx-chip:hover{
+  border-color:var(--clx-color-brand);
+  background:radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--clx-color-brand) 20%, transparent), var(--clx-color-bg-body));
+  box-shadow:var(--clx-shadow-neon);
+  transform:translateY(-1px);
+}
+
+#clx-page-colecionaveis .clx-chip--clear{
+  border-color:color-mix(in srgb, var(--clx-color-brand) 75%, transparent);
+  background:linear-gradient(135deg, rgb(15 23 42 / 75%), rgb(15 23 42 / 28%));
+}
+
+#clx-page-colecionaveis .clx-chip--muted{
+  border-color:var(--clx-color-border-subtle);
+  color:var(--clx-color-text-muted);
+  background:color-mix(in srgb, var(--clx-color-bg-elevated) 85%, transparent);
+}
+
+/* Remove setas do input number (min/max) */
+#clx-page-colecionaveis input[type="number"]::-webkit-outer-spin-button,
+#clx-page-colecionaveis input[type="number"]::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+#clx-page-colecionaveis input[type="number"]{ -moz-appearance: textfield; }
+#clx-page-colecionaveis input[type="number"]{ appearance:textfield; }
+#clx-page-colecionaveis .clx-price-range input[type="number"]{ -webkit-appearance:none !important; -moz-appearance:textfield !important; appearance:textfield !important; }
+
+/* =========================
+   FILTROS
+========================= */
+#clx-page-colecionaveis .clx-filters{
+  display:grid;
+  gap:.72rem;
+}
+
+#clx-page-colecionaveis .clx-filter-group label{
+  display:block;
+  margin-bottom:.3rem;
+  color:var(--clx-color-brand-neon);
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  font-size:.82rem;
+  font-weight:700;
+}
+
+#clx-page-colecionaveis .clx-filter-group input,
+#clx-page-colecionaveis .clx-filter-group select{
+  width:100%;
+  border:1px solid var(--clx-color-border-subtle);
+  border-radius:11px;
+  background:var(--clx-color-bg-soft);
+  color:var(--clx-color-text-main);
+  padding:.62rem .78rem;
+  font-size:.97rem;
+  appearance:none;
+}
+
+#clx-page-colecionaveis .clx-filter-group select{
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--clx-color-brand-neon) 50%),
+    linear-gradient(135deg, var(--clx-color-brand-neon) 50%, transparent 50%);
+  background-position:calc(100% - 16px) calc(50% - 3px), calc(100% - 11px) calc(50% - 3px);
+  background-size:5px 5px, 5px 5px;
+  background-repeat:no-repeat;
+  padding-right:2rem;
+}
+
+#clx-page-colecionaveis .clx-filter-group input[type="number"]{ padding-right:.55rem; }
+
+#clx-page-colecionaveis .clx-filter-group input:focus-visible,
+#clx-page-colecionaveis .clx-filter-group select:focus-visible,
+#clx-page-colecionaveis .clx-pill:focus-visible,
+#clx-page-colecionaveis .clx-page-btn:focus-visible{
+  outline:2px solid var(--clx-color-brand);
+  outline-offset:-1px;
+}
+
+#clx-page-colecionaveis .clx-filter-group select option{
+  background:var(--clx-color-bg-elevated);
+  color:var(--clx-color-text-main);
+}
+
+#clx-page-colecionaveis .clx-price-range div{
+  display:grid;
+  gap:.45rem;
+  grid-template-columns:1fr 1fr;
+}
+
+#clx-page-colecionaveis .clx-pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.34rem;
+}
+
+#clx-page-colecionaveis .clx-pill{
+  border:1px solid var(--clx-color-border-strong);
+  background:color-mix(in srgb, var(--clx-color-brand) 16%, transparent);
+  color:var(--clx-color-text-main);
+  border-radius:var(--clx-radius-pill);
+  padding:.18rem .58rem;
+  font-size:.68rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.02em;
+  line-height:1.1;
+  cursor:pointer;
+}
+
+#clx-page-colecionaveis .clx-pill.is-active{
+  background:color-mix(in srgb, var(--clx-color-brand) 34%, transparent);
+  color:#e9ffee;
+}
+
+#clx-page-colecionaveis .clx-pill:hover{
+  border-color:var(--clx-color-brand);
+  background:radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--clx-color-brand) 20%, transparent), var(--clx-color-bg-body));
+  box-shadow:var(--clx-shadow-neon);
+  transform:translateY(-1px);
+}
+
+#clx-page-colecionaveis .clx-filter-actions{
+  display:grid;
+  gap:.42rem;
+  padding:.12rem .18rem .42rem; /* respiro para hover do botão */
+}
+#clx-page-colecionaveis .clx-filter-actions .clx-btn{
+  min-height:38px;
+}
+
+#clx-page-colecionaveis .clx-filter-actions .clx-btn--primary{
+  color:var(--clx-color-brand-neon) !important;
+  border-color:var(--clx-color-brand);
+  background:radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--clx-color-brand) 20%, transparent), var(--clx-color-bg-body));
+  box-shadow:var(--clx-shadow-neon);
+}
+
+#clx-page-colecionaveis .clx-filter-actions .clx-btn--secondary{
+  color:var(--clx-color-brand-neon) !important;
+  border-color:color-mix(in srgb, var(--clx-color-brand) 75%, transparent);
+  background:linear-gradient(135deg, rgb(15 23 42 / 75%), rgb(15 23 42 / 28%));
+  box-shadow:0 0 0 1px rgb(15 23 42 / 90%), 0 0 22px color-mix(in srgb, var(--clx-color-brand) 50%, transparent);
+}
+
+/* =========================
+   GRID + CARD
+========================= */
+#clx-page-colecionaveis .clx-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+  gap:.78rem;
+}
+
+#clx-page-colecionaveis .clx-card{
+  border:1px solid var(--clx-color-border-subtle);
+  border-radius:var(--clx-radius-md);
+  overflow:hidden;
+  background:linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--clx-color-bg-elevated) 98%, black),
+    color-mix(in srgb, var(--clx-color-bg-soft) 98%, black)
+  );
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--clx-color-border-subtle) 45%, transparent);
+  transition:box-shadow var(--clx-transition-base), border-color var(--clx-transition-base), transform var(--clx-transition-base);
+}
+
+#clx-page-colecionaveis .clx-card:hover{
+  border-color:var(--clx-color-border-strong);
+  box-shadow:var(--clx-shadow-neon);
+  transform:translateY(-2px);
+}
+
+#clx-page-colecionaveis .clx-thumb{
+  position:relative;
+  margin:0;
+  width:100%;
+  aspect-ratio:1 / 1;
+  background:var(--clx-color-bg-soft);
+}
+
+#clx-page-colecionaveis .clx-thumb img{
+  display:block;
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover;
+}
+
+/* body do card (mantém seu padding) */
+#clx-page-colecionaveis .clx-card-body{
+  width:100%;
+  padding:.55rem .70rem .70rem;
+  text-align:center;
+}
+
+#clx-page-colecionaveis .clx-card h3{
+  width:100%;
+  margin:.25rem 0 .30rem;
+  min-height:unset;
+  color:var(--clx-color-text-main);
+  font-size:.88rem;
+  line-height:1.15;
+}
+
+#clx-page-colecionaveis .clx-price{
+  width:100%;
+  margin:0 0 .10rem;
+  color:var(--clx-color-brand-neon);
+  font-size:1.03rem;
+  font-weight:800;
+}
+
+#clx-page-colecionaveis .clx-stock{
+  width:100%;
+  margin:0 0 .24rem;
+  font-size:.78rem;
+  color:var(--clx-color-brand-neon);
+}
+
+#clx-page-colecionaveis .clx-stock.out-stock{ color:#ff5c8a; }
+
+/* mini-meta */
+#clx-page-colecionaveis .clx-card-mini-meta{
+  width:100%;
+  margin:0 0 .35rem;
+  padding:.28rem .60rem;
+  border-radius:10px;
+  border:1px solid color-mix(in srgb, var(--clx-color-border-strong) 55%, transparent);
+  background:color-mix(in srgb, var(--clx-color-brand) 8%, var(--clx-color-bg-soft));
+  color:var(--clx-color-text-muted);
+  font-size:.6rem;
+}
+
+#clx-page-colecionaveis .clx-card-mini-meta p{
+  margin:0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:.34rem;
+}
+
+#clx-page-colecionaveis .clx-card-mini-meta p + p{ margin-top:.16rem; }
+
+#clx-page-colecionaveis .clx-card-mini-meta p span{
+  display:inline-flex;
+  align-items:center;
+  gap:.2rem;
+  min-width:0;
+  white-space:nowrap;
+}
+
+#clx-page-colecionaveis .clx-card-mini-meta p strong{
+  color:var(--clx-color-text-main);
+  font-weight:800;
+  white-space:nowrap;
+}
+
+/* ações (botões) */
+#clx-page-colecionaveis .clx-card-actions{
+  width:100%;
+  display:grid;
+  gap:.38rem;
+  margin:.08rem 0 .35rem;
+  padding:0 .12rem;
+}
+
+#clx-page-colecionaveis .clx-card-btn{
+  min-height:28px;
+  width:100%;
+  font-size:.58rem;
+  font-weight:700;
+  letter-spacing:.02em;
+  padding:.36rem .5rem;
+  white-space:nowrap;
+}
+
+#clx-page-colecionaveis .clx-card-actions .clx-btn.clx-card-btn.clx-btn--compact{
+  min-height:36px;
+  width:100%;
+  padding:.45rem .70rem;
+  font-size:.70rem;
+  letter-spacing:.06em;
+  line-height:1;
+  white-space:nowrap;
+}
+
+#clx-page-colecionaveis .clx-card-taxonomy{
+  width:100%;
+  margin:.20rem 0 0;
+  color:var(--clx-color-text-muted);
+  font-size:.62rem;
+}
+
+/* =========================
+   BADGES
+========================= */
+#clx-page-colecionaveis .clx-badge{
+  position:absolute;
+  top:.42rem;
+  left:.42rem;
+  border-radius:var(--clx-radius-pill);
+  padding:.08rem .34rem;
+  font-size:.5rem;
+  font-weight:800;
+  line-height:1;
+}
+
+#clx-page-colecionaveis .clx-badge--promo,
+#clx-page-colecionaveis .clx-badge--new{
+  background:rgb(255 77 216 / 22%);
+  border:1px solid rgb(255 77 216 / 70%);
+  color:#ffd4f3;
+}
+
+#clx-page-colecionaveis .clx-badge--official{
+  background:color-mix(in srgb, var(--clx-color-brand) 24%, transparent);
+  border:1px solid color-mix(in srgb, var(--clx-color-brand) 70%, transparent);
+  color:#d8ffe8;
+}
+
+/* =========================
+   PAGINAÇÃO / ESTADOS
+========================= */
+#clx-page-colecionaveis .clx-pagination{
+  margin-top:.9rem;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.34rem;
+  overflow-x:hidden;
+}
+
+#clx-page-colecionaveis .clx-page-btn{
+  border:1px solid var(--clx-color-border-strong);
+  border-radius:var(--clx-radius-pill);
+  background:color-mix(in srgb, var(--clx-color-brand) 12%, transparent);
+  color:var(--clx-color-text-main);
+  padding:.35rem .62rem;
+  font-size:.79rem;
+  cursor:pointer;
+}
+
+#clx-page-colecionaveis .clx-page-btn:hover,
+#clx-page-colecionaveis .clx-page-btn:focus-visible{
+  border-color:var(--clx-color-brand-neon);
+  color:var(--clx-color-brand-neon);
+  background:color-mix(in srgb, var(--clx-color-brand) 22%, transparent);
+}
+
+#clx-page-colecionaveis .clx-page-btn.is-active{
+  border-color:var(--clx-color-brand);
+  color:var(--clx-color-brand-neon);
+}
+
+#clx-page-colecionaveis .clx-page-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+#clx-page-colecionaveis .clx-empty{
+  padding:1rem;
+  border:1px dashed var(--clx-color-border-subtle);
+  border-radius:var(--clx-radius-md);
+  color:var(--clx-color-text-muted);
+}
+
+#clx-page-colecionaveis [data-clx-grid].is-loading{
+  opacity:.5;
+  pointer-events:none;
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+@media (min-width:901px){
+  #clx-page-colecionaveis{
+    padding:30px;
+    /* topo levemente maior que as laterais, sem criar tarja grande quando header some */
+    padding-top:var(--clx-page-top-pad, 42px);
+  }
+  #clx-page-colecionaveis .clx-open-drawer{ display:none; }
+
+  #clx-page-colecionaveis .clx-layout{
+    grid-template-columns:minmax(250px, 310px) 1fr;
+    gap:1.1rem;
+  }
+
+  /* Sticky: garantir que pais não quebrem sticky (Elementor às vezes aplica overflow/transform) */
+  #clx-page-colecionaveis,
+  #clx-page-colecionaveis .clx-layout,
+  #clx-page-colecionaveis .clx-results{
+    overflow: visible;
+  }
+
+  /* Desktop: sidebar inteiro (sem scroll interno) acompanhando a rolagem */
+  #clx-page-colecionaveis .clx-sidebar{
+    padding-bottom:.55rem; /* evita clipping do hover no rodapé */
+    position:sticky;
+    inset:auto;
+    top:var(--clx-sticky-top, 110px);
+    height:auto;
+    max-height:none;
+    overflow:hidden; /* clip de hover/focus sem scroll interno */
+    width:auto;
+    border:1px solid var(--clx-color-border-subtle);
+    border-radius:var(--clx-radius-lg);
+    transform:none;
+    z-index:1;
+  }
+
+  #clx-page-colecionaveis .clx-sidebar .clx-sidebar-scroll{
+    height:auto;
+    max-height:none;
+    overflow:visible;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+
+  #clx-page-colecionaveis .clx-close-drawer,
+  #clx-page-colecionaveis .clx-overlay{
+    display:none !important;
+  }
+
+  /* evita “quique” visual do fallback JS */
+  #clx-page-colecionaveis .clx-sidebar{ transition:none !important; }
+
+
+  /* desktop sem barra de rolagem interna */
+  #clx-page-colecionaveis .clx-sidebar .clx-sidebar-scroll::-webkit-scrollbar{ width:0; height:0; }
+}
+
+
+/* Mobile/Tablet: drawer full-width abaixo do header, com scroll interno */
+@media (max-width:900px){
+  #clx-page-colecionaveis .clx-toolbar{ align-items:flex-start; }
+  #clx-page-colecionaveis .clx-sidebar{
+    inset:var(--clx-sticky-top, 0px) 0 0 0;
+    width:100%;
+    max-width:none;
+    height:calc(100dvh - var(--clx-sticky-top, 0px));
+    overflow:hidden;
+    border-right:0;
+    border-radius:0;
+    z-index:30;
+  }
+  #clx-page-colecionaveis .clx-overlay{
+    inset:var(--clx-sticky-top, 0px) 0 0 0;
+    z-index:29;
+  }
+  #clx-page-colecionaveis .clx-sidebar .clx-sidebar-scroll{
+    height:100%;
+    overflow:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  #clx-page-colecionaveis .clx-card,
+  #clx-page-colecionaveis .clx-sidebar{
+    transition:none;
+  }
+}
+
+/* =========================
+   PREÇO (PROMO)
+========================= */
+[data-clx-root] .clx-price ins,
+[data-clx-root] .clx-price ins span.woocommerce-Price-amount{
+  text-decoration:none !important;
+  border-bottom:0 !important;
+}
+
+[data-clx-root] .clx-price del,
+[data-clx-root] .clx-price del span.woocommerce-Price-amount{
+  text-decoration:line-through !important;
+}
+
+[data-clx-root] .clx-price a,
+[data-clx-root] .clx-price a *{
+  text-decoration:none !important;
+}
+
+/* DEL menor/discreto */
+#clx-page-colecionaveis .clx-price del,
+#clx-page-colecionaveis .clx-price del .woocommerce-Price-amount{
+  font-size:.92em !important;  /* ajuste fino: 0.85–0.95 */
+  opacity:.75 !important;
+  font-weight:700 !important;
+}
+
+/* INS (preço atual) preservado */
+#clx-page-colecionaveis .clx-price ins,
+#clx-page-colecionaveis .clx-price ins .woocommerce-Price-amount{
+  font-size:1em !important;
+}
+
+/* =========================================================
+   AJUSTE FINO — “largura mais estreita”
+   Afeta APENAS: mini-meta + área dos botões
+   (mantém o resto intacto)
+========================================================= */
+
+/* mini-meta mais estreito */
+#clx-page-colecionaveis .clx-card-mini-meta{
+  padding-left:.38rem !important;
+  padding-right:.38rem !important;
+}
+
+/* área dos botões mais estreita (respiro mínimo) */
+#clx-page-colecionaveis .clx-card-actions{
+  padding-left:.06rem !important;
+  padding-right:.06rem !important;
+}
+
+/* padding interno do botão (pega compact e normal) */
+#clx-page-colecionaveis .clx-card-actions .clx-btn.clx-card-btn,
+#clx-page-colecionaveis .clx-card-actions .clx-card-btn{
+  padding-left:.44rem !important;
+  padding-right:.44rem !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   CLX — FIX REAL: botões na mesma altura + mais respiro
+   Cole NO FINAL do CSS
+========================================================= */
+
+#clx-page-colecionaveis .clx-grid{
+  align-items: stretch !important;
+}
+
+#clx-page-colecionaveis .clx-card{
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+#clx-page-colecionaveis .clx-card-body{
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+}
+
+/* mini-meta */
+#clx-page-colecionaveis .clx-card-mini-meta{
+  margin-left: .25rem !important;
+  margin-right: .25rem !important;
+  width: auto !important;
+  margin-bottom: .60rem !important;
+}
+
+/* botões */
+#clx-page-colecionaveis .clx-card-actions{
+  margin-top: auto !important;
+  margin-left: .28rem !important;
+  margin-right: .28rem !important;
+  width: auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  gap: .30rem !important;
+}
+
+#clx-page-colecionaveis .clx-card-actions .clx-btn.clx-card-btn.clx-btn--compact{
+  min-height: 34px !important;
+  padding: .40rem .60rem !important;
+  font-size: .68rem !important;
+}
+
+/* taxonomia */
+#clx-page-colecionaveis .clx-card-taxonomy{
+  margin-top: .55rem !important;
+  margin-left: .28rem !important;
+  margin-right: .28rem !important;
+  width: auto !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   CLX — Alinhar botões mesmo quando NÃO existe mini-meta
+   (reserva espaço equivalente ao mini-meta nos cards “sem info”)
+   Cole NO FINAL do CSS (depois do seu último fix)
+========================================================= */
+
+/* ajuste fino: altura aproximada do mini-meta (2 linhas) */
+#clx-page-colecionaveis{
+  --clx-mini-meta-reserve: 46px; /* teste 44–60px */
+}
+
+/* Quando o card NÃO tiver .clx-card-mini-meta, a gente cria um “respiro” igual */
+#clx-page-colecionaveis .clx-card:not(:has(.clx-card-mini-meta)) .clx-price{
+  margin-bottom: calc(.55rem + var(--clx-mini-meta-reserve)) !important;
+}
+
+/* E mantém o mesmo inset lateral que você já acertou */
+#clx-page-colecionaveis .clx-card:not(:has(.clx-card-mini-meta)) .clx-card-actions,
+#clx-page-colecionaveis .clx-card:not(:has(.clx-card-mini-meta)) .clx-card-taxonomy{
+  margin-left: .28rem !important;
+  margin-right: .28rem !important;
+  width: auto !important;
+}
+
+
+/* Hardening: evitar barra horizontal na sidebar */
+#clx-page-colecionaveis .clx-sidebar,
+#clx-page-colecionaveis .clx-sidebar *{
+  max-width:100%;
+}
+#clx-page-colecionaveis .clx-sidebar{ overflow:hidden !important; }
+#clx-page-colecionaveis .clx-sidebar .clx-sidebar-scroll{ overflow-x:hidden !important; }
+
+/* Patch v14: evitar estouro visual de focus/hover nas bordas da sidebar */
+#clx-page-colecionaveis .clx-sidebar .clx-sidebar-scroll{
+  padding-inline: 1px;
+  box-sizing: border-box;
+}
+#clx-page-colecionaveis .clx-filter-group input,
+#clx-page-colecionaveis .clx-filter-group select,
+#clx-page-colecionaveis .clx-pill,
+#clx-page-colecionaveis .clx-chip,
+#clx-page-colecionaveis .clx-filter-actions .clx-btn{
+  max-width:100%;
+}
+
+
+/* Patch v15/v16: chips ativos do topo sem estourar o grid no hover */
+#clx-page-colecionaveis .clx-toolbar,
+#clx-page-colecionaveis .clx-active-filters{
+  overflow: visible;
+}
+#clx-page-colecionaveis .clx-active-filters{
+  padding: 2px 4px 2px 2px;
+  margin: -2px -4px -2px -2px;
+}
+#clx-page-colecionaveis .clx-toolbar .clx-chip{
+  position: relative;
+  box-shadow: inset 0 0 0 0 rgba(0,0,0,0);
+}
+#clx-page-colecionaveis .clx-toolbar .clx-chip:hover,
+#clx-page-colecionaveis .clx-toolbar .clx-chip:focus-visible{
+  transform: none;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--clx-color-brand) 88%, white 12%),
+    inset 0 0 16px color-mix(in srgb, var(--clx-color-brand) 18%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--clx-color-brand) 75%, transparent);
+  outline-offset: 0;
+}
+
+
+@media (max-width: 900px){
+  #clx-page-colecionaveis .clx-sidebar-head h2{ font-size:1rem; gap:.55rem; }
+  #clx-page-colecionaveis .clx-meta-bullet{ width:1.8rem; height:1.8rem; }
+  #clx-page-colecionaveis .clx-meta-bullet svg, #clx-page-colecionaveis .clx-meta-bullet img{ width:.95rem; height:.95rem; }
+}
+
+
+/* ============================================================
+   PATCH v18 — Sidebar head bullet/title: prevent clipping
+   (allow glow/oversize without cortar nas bordas)
+   ============================================================ */
+#clx-page-colecionaveis .clx-sidebar { overflow: visible; }
+#clx-page-colecionaveis .clx-sidebar-head { overflow: visible; }
+#clx-page-colecionaveis .clx-sidebar-head .clx-sidebar-bullet { filter: drop-shadow(0 0 14px rgba(34,197,94,.35)); }
+#clx-page-colecionaveis .clx-sidebar-head .clx-sidebar-title { text-wrap: balance; }
+
+
+
+/* Patch v19d (ajuste final): limitar título a no máximo 2 linhas na desktop */
+@media (min-width: 901px){
+  #clx-page-colecionaveis .clx-sidebar-head h2{
+    font-size: clamp(1.48rem, 1.78vw, 1.92rem);
+    line-height: .97;
+    gap: .76rem;
+    letter-spacing: .03em;
+  }
+  #clx-page-colecionaveis .clx-sidebar-title-text{
+    gap: .03rem;
+  }
+  #clx-page-colecionaveis .clx-sidebar-title-text > span:first-child{
+    white-space: nowrap;
+  }
+}
+
+
+/* Patch v19e: título em 2 linhas (Encontre / sua semente), centralizado no ícone e SVG um pouco maior */
+@media (min-width: 901px){
+  #clx-page-colecionaveis .clx-sidebar-head h2{
+    align-items: center;
+    gap: .82rem;
+  }
+  #clx-page-colecionaveis .clx-sidebar-title-text{
+    justify-content: center;
+  }
+  #clx-page-colecionaveis .clx-sidebar-title-text > span:first-child{
+    white-space: nowrap;
+  }
+  #clx-page-colecionaveis .clx-sidebar-title-text > span:last-child{
+    white-space: nowrap;
+  }
+  #clx-page-colecionaveis .clx-meta-bullet.clx-meta-bullet--filter{
+    width: 5.15rem;
+    height: 5.15rem;
+  }
+}
+
+
+/* Patch v20 mobile drawer UX: topo mais próximo, fullscreen e scroll interno completo */
+@media (max-width: 900px){
+  /* reduz o respiro acima do bloco em mobile (print 1) */
+  #clx-page-colecionaveis{
+    --clx-top-gap-extra: 12px;
+    padding-top: calc(var(--clx-sticky-top, 64px) + var(--clx-top-gap-extra, 12px));
+  }
+
+  /* drawer aberto deve cobrir o topo inteiro (sem header visível) */
+  #clx-page-colecionaveis .clx-sidebar.is-open{
+    inset: 0 !important;
+    top: 0 !important;
+    height: 100dvh !important;
+    z-index: 99999 !important;
+    border-radius: 0 !important;
+    border-right: 0 !important;
+  }
+
+  #clx-page-colecionaveis .clx-overlay.is-open{
+    inset: 0 !important;
+    top: 0 !important;
+    z-index: 99998 !important;
+  }
+
+  /* garante scroll completo dentro do filtro no mobile */
+  #clx-page-colecionaveis .clx-sidebar.is-open .clx-sidebar-scroll{
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+    touch-action: pan-y;
+  }
+
+  /* cabeçalho do drawer sempre visível no topo ao rolar filtros */
+  #clx-page-colecionaveis .clx-sidebar-head{
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--clx-color-bg-elevated) 99%, black), color-mix(in srgb, var(--clx-color-bg-soft) 99%, black));
+    padding-top: max(10px, env(safe-area-inset-top, 0px));
+    padding-bottom: .35rem;
+  }
+}
+
+
+/* CLX mobile drawer final scroll/top fix */
+@media (max-width:900px){
+  #clx-page-colecionaveis .clx-sidebar,
+  #clx-page-colecionaveis .clx-sidebar .clx-sidebar-scroll{
+    min-height:0;
+  }
+
+  #clx-page-colecionaveis .clx-sidebar .clx-sidebar-scroll{
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    max-height:100%;
+  }
+
+  /* quando aberto, ocupa a tela inteira no topo (esconde header por trás) */
+  #clx-page-colecionaveis .clx-sidebar.is-open{
+    position:fixed;
+    inset:0 !important;
+    height:100dvh !important;
+    z-index:99999;
+  }
+
+  #clx-page-colecionaveis .clx-overlay.is-open{
+    position:fixed;
+    inset:0 !important;
+    z-index:99998;
+  }
+
+  /* reduz respiro superior do drawer no mobile */
+  #clx-page-colecionaveis .clx-sidebar-head{
+    padding-top:10px;
+  }
+}
+
+
+/* Patch v21 — mobile anti-jump (header inteligente)
+   Evita layout shift quando o header some/aparece no mobile.
+   Mantém --clx-sticky-top só para o drawer, não para empurrar a página. */
+@media (max-width:900px){
+  #clx-page-colecionaveis{
+    padding-top: 18px !important;
+  }
+}
+
+/* Patch v22 — mobile drawer header bullet/text scale sem quebrar linha */
+@media (max-width:900px){
+  #clx-page-colecionaveis .clx-sidebar-header h2{
+    gap:10px;
+    white-space:normal;
+    flex-wrap:nowrap;
+    align-items:center;
+    font-size:clamp(14px, 3.8vw, 18px);
+    line-height:1.02;
+    letter-spacing:.02em;
+    min-width:0;
+  }
+
+  #clx-page-colecionaveis .clx-sidebar-title-text{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    justify-content:center;
+    gap:2px;
+    white-space:normal;
+    line-height:1;
+    min-width:0;
+    flex:1 1 auto;
+  }
+
+  #clx-page-colecionaveis .clx-sidebar-title-text > span{
+    display:block;
+    white-space:nowrap;
+  }
+
+  #clx-page-colecionaveis .clx-meta-bullet.clx-meta-bullet--filter{
+    width:72px;
+    height:72px;
+    flex:0 0 72px;
+    margin-right:8px;
+  }
+
+  #clx-page-colecionaveis .clx-meta-bullet.clx-meta-bullet--filter img{
+    width:68px;
+    height:68px;
+  }
+}
+
+
+/* Patch v24 — mobile drawer header grow (SVG + texto proporcionais, sem quebrar linha) */
+@media (max-width:900px){
+  #clx-page-colecionaveis .clx-sidebar-head{
+    align-items:center;
+    gap:8px;
+    margin-bottom:.75rem;
+  }
+  #clx-page-colecionaveis .clx-sidebar-head h2{
+    flex:1 1 auto;
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size: clamp(23px, 6.8vw, 29px) !important;
+    line-height:.95;
+    letter-spacing:.025em;
+    white-space:nowrap;
+  }
+  #clx-page-colecionaveis .clx-sidebar-title-text{
+    flex:1 1 auto;
+    min-width:0;
+    gap:0;
+  }
+  #clx-page-colecionaveis .clx-sidebar-title-text > span{
+    white-space:nowrap;
+    font-size: inherit;
+    line-height: .95;
+  }
+  #clx-page-colecionaveis .clx-meta-bullet.clx-meta-bullet--filter{
+    width:84px !important;
+    height:84px !important;
+    flex:0 0 84px !important;
+    margin-right:2px;
+  }
+  #clx-page-colecionaveis .clx-meta-bullet.clx-meta-bullet--filter img{
+    width:84px !important;
+    height:84px !important;
+  }
+  #clx-page-colecionaveis .clx-close-drawer{
+    flex:0 0 auto;
+    margin-left:4px;
+    padding:4px;
+  }
+}
