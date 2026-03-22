@@ -1,0 +1,36 @@
+:root{
+  --clx-color-bg-body:#010709;
+  --clx-color-bg-elevated:#020c10;
+  --clx-color-bg-soft:#020617;
+
+  --clx-color-brand:#22c55e;
+  --clx-color-brand-strong:#16a34a;
+  --clx-color-brand-alt:#229a4b;
+  --clx-color-brand-neon:#4ade80;
+
+  --clx-color-text-main:#e5e7eb;
+  --clx-color-text-muted:#9ca3af;
+  --clx-color-text-soft:#6b7280;
+
+  --clx-color-border-subtle: rgba(148,163,184,.45);
+  --clx-color-border-strong: rgba(34,197,94,.70);
+
+  --clx-font-base: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --clx-font-title: Rubik, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --clx-radius-md:14px;
+  --clx-radius-lg:18px;
+  --clx-radius-xl:24px;
+  --clx-radius-pill:999px;
+
+  --clx-shadow-soft: 0 16px 40px rgba(15,23,42,.75);
+  --clx-shadow-neon: 0 0 0 1px rgba(34,197,94,.55), 0 0 32px rgba(34,197,94,.40);
+
+  --clx-transition-base:220ms cubic-bezier(.22,.61,.36,1);
+}
+
+body {
+  font-family: var(--clx-font-base);
+  background: var(--clx-color-bg-body);
+  color: var(--clx-color-text-main);
+}
